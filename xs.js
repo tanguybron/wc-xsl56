@@ -27,7 +27,7 @@ async function wave(ids,p){
 (async()=>{
  logj({ev:'start',ua:navigator.userAgent});
  const hbt=setInterval(()=>logj({ev:'hb'}),7000);setTimeout(()=>clearInterval(hbt),28000);
- const ids=[14,15,16,17,18,19,20,21,30,60,120,250,600,1200];
+ const ids=[300,600,900,1200,1500,1800,2100,2250,2400,2600,2800,3000];
  let frontier={},seen={};
  for(let k=0;k<ids.length;k+=6){
   if(EL()>21000)logj({sweeptimeout:k});if(EL()>21000)break;
