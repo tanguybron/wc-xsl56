@@ -6,14 +6,14 @@ const logj=o=>log(JSON.stringify(Object.assign({t:Math.round(EL()/100)/10},o)));
 onerror=(m,s,l)=>{logj({jserr:''+m+' L'+l})};
 onunhandledrejection=e=>{logj({rej:''+e.reason})};
 const CHARS='abcdefghijklmnopqrstuvwxyz0123456789-_ ';
-let rid=0;
+let rid=0,seq=0,T0W=0;
 function probe1(id,q){return new Promise(res=>{const f=document.createElement('iframe');const st=Date.now();let fin=0;
  const done=v=>{if(!fin){fin=1;try{f.remove()}catch(e){}res(v)}};
  f.style.cssText='display:none';
- f.onload=()=>done(Date.now()-st);f.onerror=()=>done(9999);setTimeout(()=>done(9998),9000);
- f.src=B+'notes/'+id+'/'+encodeURIComponent(q)+'?v='+T0+'x'+(rid++);
- document.body.appendChild(f);});}
-async function probe(id,q){const a=await probe1(id,q);if(a<1300||a>6000)return a;const b=await probe1(id,q);return b;}
+const myseq=seq++;
+ setTimeout(()=>{if(!fin){document.body.appendChild(f)}else{res(9997)}},25*(myseq%48));
+ f.src=B+'notes/'+id+'/'+encodeURIComponent(q)+'?v='+T0+'x'+(rid++);});}
+async function probe(id,q){return probe1(id,q);}
 async function wave(ids,p){
  const out={},dbg={};
  await Promise.all(ids.map(async id=>{
