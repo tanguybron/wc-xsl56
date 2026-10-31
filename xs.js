@@ -27,10 +27,10 @@ async function wave(ids,p){
 (async()=>{
  logj({ev:'start',ua:navigator.userAgent});
  const hbt=setInterval(()=>logj({ev:'hb'}),7000);setTimeout(()=>clearInterval(hbt),28000);
- const ids=[];for(let i=1;i<=24;i++)ids.push(i);
+ const ids=[];for(let i=7;i<=13;i++)ids.push(i);
  let frontier={},seen={};
  for(let k=0;k<ids.length;k+=6){
-  if(EL()>14000)break;
+  if(EL()>16000)break;
   const res=await wave(ids.slice(k,k+6),'');
   for(const id in res){if(id[0]==='d')continue;
    const h=res[id];
