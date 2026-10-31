@@ -31,7 +31,7 @@ function wave(id,chars,tickw){ // ONE id, <=20 chars, <=20 iframes
  logj({ev:'start',ua:navigator.userAgent.slice(0,55),ck:navigator.cookieEnabled?1:0,hc:navigator.hardwareConcurrency,et:conn.effectiveType||'-',rt:conn.rtt!=-1?conn.rtt:-1,ids:ids.join(',')});
  const m0=Date.now();
  await new Promise(res=>{const f=document.createElement('iframe');f.style.cssText='display:none';
-  f.onload=()=>{logj({ev:'mk',t:Date.now()-m0});res()};f.onerror=()=>{logj({ev:'mk',err:1});res()};setTimeout(res,4500);f.src=B+'?m='+RID;document.body.appendChild(f);});
+  f.onload=()=>{logj({ev:'mk',t:Date.now()-m0});res()};f.onerror=()=>{logj({ev:'mk',err:1});res()};setTimeout(res,2500);f.src=B+'?m='+RID;document.body.appendChild(f);});
  for(let i=0;i<ids.length&&EL()<20000;i++){
   const id=ids[i];
   await wave(id,C1,i);if(EL()>20000){logj({ev:'cut',i:i});break;}
