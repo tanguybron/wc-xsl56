@@ -26,7 +26,7 @@ async function wave(ids,p){
 }
 (async()=>{
  logj({ev:'start',ua:navigator.userAgent});
- let hbi=0;setInterval(()=>logj({ev:'hb',i:hbi++}),15000);
+ let hbi=0;const hbt=setInterval(()=>{logj({ev:'hb',i:hbi++});if(hbi>7)clearInterval(hbt);},15000);
  const ranges=[[1,24],[25,64],[65,144]];
  let frontier=[],seen={},batch={},bc=0;
  outer:for(const[a,b]of ranges){
