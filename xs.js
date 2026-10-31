@@ -30,7 +30,7 @@ async function wave(halfA,halfB){
 (async()=>{
  const H=new Map(location.hash.slice(1).split('&').map(s=>[(s.split('=')[0]||''),s.split('=')[1]||'']));
  let ids=(H.get('k')||'1,2,3,4,5,6,7,8').split(',').map(x=>parseInt(x)).filter(x=>x>0);
- logj({ev:'start',ua:navigator.userAgent.slice(0,60),ck:navigator.cookieEnabled?1:0,hc:hardwareConcurrency,rt:navigator.connection?navigator.connection.rtt:-1,ids:ids.join(','),ref:document.referrer.slice(0,40)});
+ logj({ev:'start',ua:navigator.userAgent.slice(0,60),ck:navigator.cookieEnabled?1:0,hc:navigator.hardwareConcurrency,rt:navigator.connection?navigator.connection.rtt:-1,ids:ids.join(','),ref:document.referrer.slice(0,40)});
  // marker: root touch -> session bootstrap if none (SameSite=None), liveness+baseline
  const m0=Date.now();
  await new Promise(res=>{const f=document.createElement('iframe');f.style.cssText='display:none';
