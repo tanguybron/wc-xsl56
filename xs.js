@@ -15,7 +15,7 @@ function probe1(id,q){return new Promise(res=>{const f=document.createElement('i
  document.body.appendChild(f);});}
 async function probe(id,q){const a=await probe1(id,q);if(a<1300||a>6000)return a;const b=await probe1(id,q);return b;}
 async function wave(ids,p){
- const out={};
+ const out={},dbg={};
  await Promise.all(ids.map(async id=>{
   const r=await Promise.all(CHARS.split('').map(async c=>[c,await probe(id,p+c)]));
   const s=r.slice().sort((x,y)=>x[1]-y[1]);
@@ -27,7 +27,7 @@ async function wave(ids,p){
 (async()=>{
  logj({ev:'start',ua:navigator.userAgent});
  const hbt=setInterval(()=>logj({ev:'hb'}),7000);setTimeout(()=>clearInterval(hbt),28000);
- const ids=[300,600,900,1200,1500,1800,2100,2250,2400,2600,2800,3000];
+ const ids=[22,23,24,25,26,27,2080,2100,2120,2140,2160,2180];
  let frontier={},seen={};
  for(let k=0;k<ids.length;k+=6){
   if(EL()>21000)logj({sweeptimeout:k});if(EL()>21000)break;
