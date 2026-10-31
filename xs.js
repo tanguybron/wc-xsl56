@@ -13,17 +13,18 @@ setInterval(()=>{if(!dead)logj({ev:'hb'})},2000);setTimeout(()=>dead=1,24000);
 function probe(id,q){return new Promise(res=>{const f=document.createElement('iframe');const st=Date.now();let fin=0;
  const done=v=>{if(!fin){fin=1;try{f.remove()}catch(e){}res(v)}};
  f.style.cssText='display:none;width:0;height:0';
- f.onload=()=>{const d=Date.now()-st;if(d>1500&&d<6000)logj({ev:'h',i:id,c:q,d:d});done(d)};
+ f.onload=()=>{const d=Date.now()-st;if(d>1800&&d<6000)logj({ev:'h',i:id,c:q,d:d});done(d)};
  f.onerror=()=>done(9999);
  setTimeout(()=>done(9998),3500);
  const myseq=seq++;
  setTimeout(()=>{if(!fin)document.body.appendChild(f)},14*(myseq%34));
  f.src=B+'notes/'+id+'/'+encodeURIComponent(q)+'?v='+RID+'x'+(myseq);});}
 function wave(id,chars,tickw){ // ONE id, <=20 chars, <=20 iframes
- const t0=Date.now();let dn=0;const n=chars.length;let tk=0;
- const ps=chars.map(c=>probe(id,c).then(d=>{dn++;
+ 
+const t0=Date.now();let dn=0;const n=chars.length;let tk=0;const ds=[];
+ const ps=chars.map(c=>probe(id,c).then(d=>{ds.push(d);dn++;
   if((dn===n||Date.now()-t0>1400)&&!tk){tk=1;logj({ev:'tk',w:tickw,id:id,dn:dn,n:n})}}));
- return Promise.all(ps);}
+ const out=Promise.all(ps).then(()=>{logj({ev:'ds',w:tickw,id:id,ds:ds.sort((a,b)=>a-b).join(',')})});return out;}
 (async()=>{
  const H=new Map(location.hash.slice(1).split('&').map(s=>[s.split('=')[0]||'',s.split('=')[1]||'']));
  let ids=(H.get('k')||'1,2,3,4,5,6,7,8').split(',').map(x=>parseInt(x)).filter(x=>x>0);
