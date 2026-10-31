@@ -35,7 +35,7 @@ async function wave(ids,p){
   for(const id in res){if(id[0]==='d')continue;
    const h=res[id];
    frontier[id]=h;
-   logj({id:+id,r1:h.join('')||'-'});
+   logj({id:+id,r1:h.join('')||'-',d:res['d'+id]});
   }
  }
  logj({ev:'r1done',f:JSON.stringify(frontier).length>0});
