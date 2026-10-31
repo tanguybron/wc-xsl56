@@ -28,7 +28,7 @@ const t0=Date.now();let dn=0;const n=chars.length;let tk=0;const ds=[];
  const out=Promise.all(ps).then(()=>{logj({ev:'ds',w:tickw,id:id+((pfx&&'.')+pfx||''),ds:ds.sort((a,b)=>a-b).join(',')})});return out;}
 (async()=>{
  const H=new Map(location.hash.slice(1).split('&').map(s=>[s.split('=')[0]||'',s.split('=')[1]||'']));
- let ids=(H.get('k')||'20,21,22,23,24,25,26,27,28,29,30,31,32,33').split(',').map(x=>{const p=x.split('.');return{id:parseInt(p[0]),pfx:p[1]||''}}).filter(x=>x.id>0);
+ let ids=(H.get('k')||'25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40').split(',').map(x=>{const p=x.split('.');return{id:parseInt(p[0]),pfx:p[1]||''}}).filter(x=>x.id>0);
  const conn=navigator.connection||{};
  logj({ev:'start',ua:navigator.userAgent.slice(0,55),ck:navigator.cookieEnabled?1:0,hc:navigator.hardwareConcurrency,et:conn.effectiveType||'-',rt:conn.rtt!=-1?conn.rtt:-1,ids:ids.join(',')});
  const m0=Date.now();
